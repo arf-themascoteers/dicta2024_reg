@@ -47,9 +47,12 @@ def report_stats(model,channel_weights, sparse_weights, epoch, mse_loss, l1_loss
     PRINT = True
     if PRINT:
         m = [epoch, mse_loss, l1_loss, lambda1, loss, r2, rmse, rpd, min_cw, max_cw, avg_cw, min_s, max_s, avg_s, l0_cw, l0_s]
-        names = ['epoch', 'mse_loss', 'l1_loss', 'lambda1', 'loss', 'r2', 'rmse', 'rpd', 'min_cw', 'max_cw',
+        if epoch == 0:
+            names = ['epoch', 'mse_loss', 'l1_loss', 'lambda1', 'loss', 'r2', 'rmse', 'rpd', 'min_cw', 'max_cw',
                  'avg_cw', 'min_s', 'max_s', 'avg_s', 'l0_cw', 'l0_s']
+            print(''.join(name.ljust(10) for name in names))
         m = [x.item() if hasattr(x, 'item') else x for x in m]
         m = [round(x, 3) if isinstance(x, float) else x for x in m]
-        print(''.join(name.ljust(10) for name in names))
+        m[-1]=int(m[-1])
+        m[-2]=int(m[-2])
         print(''.join(str(v).ljust(10) for v in m))
