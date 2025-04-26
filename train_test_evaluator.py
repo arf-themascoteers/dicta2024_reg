@@ -5,7 +5,6 @@ import numpy as np
 import torch
 from sklearn.metrics import r2_score, mean_squared_error
 
-
 def evaluate_train_test_pair(train_x, test_x, train_y, test_y, scaler_y):
     evaluator_algorithm = get_metric_evaluator()
     evaluator_algorithm.fit(train_x, train_y)
@@ -48,12 +47,13 @@ def calculate_metrics(y_test, y_pred, scaler_y):
     return r2, rmse_o, rpd_o
 
 
+
 def get_metric_evaluator():
     gowith = "sv"
 
     if gowith == "rf":
         return RandomForestRegressor()
     elif gowith == "sv":
-        return SVR(C=1e5, kernel='rbf', gamma=1.)
+        return SVR(C=10, epsilon=0.01, kernel='rbf', gamma='scale')
     else:
         return MLPRegressor(max_iter=2000)
