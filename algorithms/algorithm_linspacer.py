@@ -4,8 +4,8 @@ import torch
 
 
 class Algorithm_linspacer(Algorithm):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
-        super().__init__(target_size, dataset, tag, reporter, verbose, test)
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose):
+        super().__init__(target_size, dataset, tag, reporter, verbose)
         self.indices = None
 
     def get_selected_indices(self):

@@ -8,7 +8,7 @@ import numpy as np
 
 
 class Algorithm(ABC):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test=False):
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose):
         self.target_size = target_size
         self.dataset = dataset
         self.tag = tag
