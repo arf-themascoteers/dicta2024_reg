@@ -2,7 +2,6 @@ from algorithm import Algorithm
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
-import numpy as np
 import math
 import train_test_evaluator
 import csv
@@ -26,7 +25,8 @@ class ZhangNet(nn.Module):
         self.weighter = nn.Sequential(
             nn.Linear(self.bands, 512),
             nn.ReLU(),
-            nn.Linear(512, self.bands)
+            nn.Linear(512, self.bands),
+            nn.Sigmoid()
         )
         self.classnet = nn.Sequential(
             nn.Conv1d(1,8,kernel_size=8, stride=4),
@@ -49,7 +49,6 @@ class ZhangNet(nn.Module):
 
     def forward(self, X):
         channel_weights = self.weighter(X)
-        channel_weights = torch.sigmoid(channel_weights)
         sparse_weights = self.sparse(channel_weights)
         reweight_out = X * sparse_weights
         reweight_out = reweight_out.reshape(reweight_out.shape[0],1,reweight_out.shape[1])
