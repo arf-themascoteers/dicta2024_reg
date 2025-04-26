@@ -30,7 +30,7 @@ class ZhangNet(nn.Module):
             nn.Linear(self.bands, 32),
             nn.ReLU(),
             nn.BatchNorm1d(32),
-            nn.Linear(10, 1),
+            nn.Linear(32, 1),
         )
         self.sparse = Sparse()
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
