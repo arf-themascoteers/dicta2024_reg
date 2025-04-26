@@ -1,7 +1,6 @@
 from algorithm import Algorithm
 import torch
 import torch.nn as nn
-from torch.utils.data import TensorDataset, DataLoader
 import math
 import train_test_evaluator
 

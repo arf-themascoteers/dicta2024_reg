@@ -1,7 +1,6 @@
 from algorithm import Algorithm
 import torch
 import torch.nn as nn
-from torch.utils.data import TensorDataset, DataLoader
 import math
 import train_test_evaluator
 
@@ -59,31 +58,27 @@ class Algorithm_v6(Algorithm):
 
     def get_selected_indices(self):
         optimizer = torch.optim.Adam(self.zhangnet.parameters(), lr=0.001, betas=(0.9,0.999))
-        dataset = TensorDataset(self.X_train, self.y_train)
-        dataloader = DataLoader(dataset, batch_size=12800000, shuffle=True)
         channel_weights = None
         loss = 0
         l1_loss = 0
         mse_loss = 0
 
         for epoch in range(self.total_epoch):
-            self.epoch = epoch
-            for batch_idx, (X, y) in enumerate(dataloader):
-                optimizer.zero_grad()
-                channel_weights, sparse_weights, y_hat = self.zhangnet(X)
-                deciding_weights = channel_weights
-                mean_weight, all_bands, selected_bands = self.get_indices(deciding_weights)
-                self.set_all_indices(all_bands)
-                self.set_selected_indices(selected_bands)
-                self.set_weights(mean_weight)
-                mse_loss = self.criterion(y_hat, y)
-                l1_loss = self.l1_loss(channel_weights)
-                lambda_value = self.get_lambda(epoch+1)
-                loss = mse_loss + lambda_value*l1_loss
-                if batch_idx == 0 and self.epoch%10 == 0:
-                    self.report_stats(channel_weights, sparse_weights, epoch, mse_loss, l1_loss.item(), lambda_value,loss)
-                loss.backward()
-                optimizer.step()
+            optimizer.zero_grad()
+            channel_weights, sparse_weights, y_hat = self.zhangnet(self.X_train)
+            deciding_weights = channel_weights
+            mean_weight, all_bands, selected_bands = self.get_indices(deciding_weights)
+            self.set_all_indices(all_bands)
+            self.set_selected_indices(selected_bands)
+            self.set_weights(mean_weight)
+            mse_loss = self.criterion(y_hat, self.y_train)
+            l1_loss = self.l1_loss(channel_weights)
+            lambda_value = self.get_lambda(epoch+1)
+            loss = mse_loss + lambda_value*l1_loss
+            if self.epoch%10 == 0:
+                self.report_stats(channel_weights, sparse_weights, epoch, mse_loss, l1_loss.item(), lambda_value,loss)
+            loss.backward()
+            optimizer.step()
 
         print(self.get_name(),"selected bands and weights:")
         print("".join([str(i).ljust(10) for i in self.selected_indices]))
