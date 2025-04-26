@@ -83,7 +83,7 @@ class Algorithm_v0(Algorithm):
                 optimizer.zero_grad()
                 channel_weights, sparse_weights, y_hat = self.zhangnet(X)
                 deciding_weights = channel_weights
-                mean_weight, all_bands, selected_bands = attn_handler.get_indices(deciding_weights)
+                mean_weight, all_bands, selected_bands = attn_handler.get_indices(deciding_weights, self.target_size)
                 self.set_all_indices(all_bands)
                 self.set_selected_indices(selected_bands)
                 self.set_weights(mean_weight)

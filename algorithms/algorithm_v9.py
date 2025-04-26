@@ -92,7 +92,7 @@ class Algorithm_v9(Algorithm):
                 l0_norm = torch.norm(sparse_weights, p=0).item()
             channel_weights, sparse_weights, y_hat = self.zhangnet(self.X_train, epoch, l0_norm)
             deciding_weights = channel_weights
-            mean_weight, all_bands, selected_bands = attn_handler.get_indices(deciding_weights)
+            mean_weight, all_bands, selected_bands = attn_handler.get_indices(deciding_weights, self.target_size)
             self.set_all_indices(all_bands)
             self.set_selected_indices(selected_bands)
             self.set_weights(mean_weight)
