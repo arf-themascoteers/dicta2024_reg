@@ -88,16 +88,16 @@ class Reporter:
 
         r2 = round(max(df["r2"].mean(),0),2)
         rmse = round(max(df["rmse"].mean(),0),2)
-        k = round(max(df["k"].mean(),0),2)
+        rpd = round(max(df["rpd"].mean(),0),2)
 
         df2 = pd.read_csv(self.all_features_summary_file)
         mask = (df2['dataset'] == dataset)
         if len(df2[mask]) == 0:
-            df2.loc[len(df2)] = {"dataset":dataset, "r2":r2, "rmse":rmse, "k": k}
+            df2.loc[len(df2)] = {"dataset":dataset, "r2":r2, "rmse":rmse, "k": rpd}
         else:
             df2.loc[mask, 'r2'] = r2
             df2.loc[mask, 'rmse'] = rmse
-            df2.loc[mask, 'k'] = k
+            df2.loc[mask, 'rpd'] = rpd
         df2.to_csv(self.all_features_summary_file, index=False)
 
     def get_saved_metrics(self, algorithm):

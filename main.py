@@ -1,9 +1,9 @@
 from task_runner import TaskRunner
 
 if __name__ == '__main__':
-    tag = "v0"
+    tag = "v1"
     tasks = {
-        "algorithms" : ["v0"],
+        "algorithms" : ["v1"],
         "datasets": ["lucas_min"],
         "target_sizes" : [512]
     }
