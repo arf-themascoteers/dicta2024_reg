@@ -130,13 +130,13 @@ class Algorithm_v0(Algorithm):
 
         mean_weight, all_bands, selected_bands = self.get_indices(channel_weights)
 
-        oa, aa, k = 0,0,0
+        r2, rmse, rpd = 0,0,0
 
         if self.verbose:
-            oa, aa, k = train_test_evaluator.evaluate_dataset(self.dataset, self)
+            r2, rmse, rpd = train_test_evaluator.evaluate_dataset(self.dataset, self)
 
         self.reporter.report_epoch(epoch, mse_loss, l1_loss, lambda1,loss,
-                               oa, aa, k,
+                               r2, rmse, rpd,
                                min_cw, max_cw, avg_cw,
                                min_s, max_s, avg_s,
                                l0_cw, l0_s,
