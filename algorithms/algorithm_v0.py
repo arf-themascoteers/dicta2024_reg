@@ -63,7 +63,6 @@ class Algorithm_v0(Algorithm):
         self.criterion = torch.nn.MSELoss()
         self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1]).to(self.device)
         self.total_epoch = 500
-        self.epoch = -1
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)
 
@@ -77,7 +76,7 @@ class Algorithm_v0(Algorithm):
         mse_loss = 0
 
         for epoch in range(self.total_epoch):
-            self.epoch = epoch
+            epoch = epoch
             grad_norms = []
             for batch_idx, (X, y) in enumerate(dataloader):
                 optimizer.zero_grad()
@@ -92,7 +91,7 @@ class Algorithm_v0(Algorithm):
                 lambda_value = self.get_lambda(epoch+1)
                 loss = mse_loss + lambda_value*l1_loss
                 if batch_idx == 0 and self.epoch%10 == 0:
-                    attn_handler.report_stats(channel_weights, sparse_weights, epoch, mse_loss, l1_loss.item(), lambda_value,loss)
+                    attn_handler.report_stats(self, channel_weights, sparse_weights, epoch, mse_loss, l1_loss.item(), lambda_value,loss)
                 loss.backward()
                 grad_norm = torch.abs(self.zhangnet.weighter[2].weight.grad)
                 grad_norms.append(grad_norm)

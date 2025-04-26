@@ -52,7 +52,6 @@ class Algorithm_bsnet(Algorithm):
     def __init__(self, target_size:int, dataset, tag, reporter, verbose):
         super().__init__(target_size, dataset, tag, reporter, verbose)
         self.criterion = torch.nn.MSELoss(reduction='sum')
-        self.epoch = -1
         x,y = self.dataset.get_train_x_y()
         self.bsnet = BSNetFC(x.shape[1]).to(self.device)
         self.X_train = torch.tensor(x, dtype=torch.float32).to(self.device)
@@ -69,7 +68,6 @@ class Algorithm_bsnet(Algorithm):
         l1_loss = 0
         mse_loss = 0
         for epoch in range(100):
-            self.epoch = epoch
             for batch_idx, (X, y) in enumerate(dataloader):
                 if X.shape[0] == 1:
                     continue
@@ -84,8 +82,8 @@ class Algorithm_bsnet(Algorithm):
                 mse_loss = self.criterion(y_hat, y)
                 l1_loss = torch.norm(channel_weights, p=1)/torch.numel(channel_weights)
                 loss = mse_loss + l1_loss * 0.01
-                if batch_idx == 0 and self.epoch%10 == 0:
-                    attn_handler.report_stats(channel_weights, channel_weights, epoch, mse_loss, l1_loss.item(), 0.01,loss)
+                if batch_idx == 0 and epoch%10 == 0:
+                    attn_handler.report_stats(self, channel_weights, channel_weights, epoch, mse_loss, l1_loss.item(), 0.01,loss)
                 loss.backward()
                 optimizer.step()
             print(f"Epoch={epoch} MSE={round(mse_loss.item(), 5)}, L1={round(l1_loss.item(), 5)}, LOSS={round(loss.item(), 5)}")
