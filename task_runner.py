@@ -10,25 +10,24 @@ import numpy as np
 
 
 class TaskRunner:
-    def __init__(self, task, tag="results", skip_all_bands=False, verbose=False, test=False):
+    def __init__(self, task, tag="results", skip_all_bands=False, verbose=False):
         torch.manual_seed(3)
         self.task = task
         self.skip_all_bands = skip_all_bands
         self.verbose = verbose
-        self.test = test
         self.tag = tag
         self.reporter = Reporter(self.tag, self.skip_all_bands)
-        self.cache = pd.DataFrame(columns=["dataset","algorithm","cache_tag","oa","aa","k","time","selected_features","selected_weights"])
+        self.cache = pd.DataFrame(columns=["dataset","algorithm","cache_tag","r2","rmse","rpd","time","selected_features","selected_weights"])
 
     def evaluate(self):
         for dataset_name in self.task["datasets"]:
-            dataset = DSManager(name=dataset_name, test=self.test)
+            dataset = DSManager(name=dataset_name)
             if not self.skip_all_bands:
                 self.evaluate_for_all_features(dataset)
             for algorithm in self.task["algorithms"]:
                 for target_size in self.task["target_sizes"]:
                     print(dataset_name, algorithm, target_size)
-                    algorithm_object = Algorithm.create(algorithm, target_size, dataset, self.tag, self.reporter, self.verbose, self.test)
+                    algorithm_object = Algorithm.create(algorithm, target_size, dataset, self.tag, self.reporter, self.verbose)
                     self.process_a_case(algorithm_object)
 
         self.reporter.save_results()
@@ -37,8 +36,8 @@ class TaskRunner:
     def process_a_case(self, algorithm:Algorithm):
         metric = self.reporter.get_saved_metrics(algorithm)
         if metric is None:
-            oas, aas, ks, metric = self.get_results_for_a_case(algorithm)
-            self.reporter.write_summary(algorithm, oas, aas, ks, metric)
+            r2s, rmses, rpds, metric = self.get_results_for_a_case(algorithm)
+            self.reporter.write_summary(algorithm, r2s, rmses, rpds, metric)
         else:
             print(algorithm.get_name(), "for", algorithm.dataset.get_name(), "for",
                   algorithm.target_size,"was done. Skipping")
@@ -57,9 +56,9 @@ class TaskRunner:
               f"for size {algorithm.target_size} "
               f"for {algorithm.get_name()} "
               f"for cache_tag {algorithm.get_cache_tag()}. Computing.")
-        oas, aas, ks, metric = algorithm.compute_performance()
+        r2s, rmses, rpds, metric = algorithm.compute_performance()
         self.save_to_cache(algorithm, metric)
-        return oas, aas, ks, metric
+        return r2s, rmses, rpds, metric
 
     def save_to_cache(self, algorithm:Algorithm, metric:Metrics):
         if not algorithm.is_cacheable():
@@ -68,7 +67,7 @@ class TaskRunner:
             "dataset":algorithm.dataset.get_name(),
             "algorithm": algorithm.get_name(),
             "cache_tag": algorithm.get_cache_tag(),
-            "time":metric.time,"oa":metric.oa,"aa":metric.aa,"k":metric.k,
+            "time":metric.time,"r2":metric.r2,"rmse":metric.rmse,"rpd":metric.rpd,
             "selected_features":algorithm.get_all_indices(),
             "selected_weights":algorithm.get_weights()
         }
@@ -88,11 +87,11 @@ class TaskRunner:
         row = rows.iloc[0]
         selected_features = row["selected_features"][0:algorithm.target_size]
         selected_weights = row["selected_weights"][0:algorithm.target_size]
-        return Metrics(row["time"], row["oa"],row["aa"], row["k"], selected_features, selected_weights)
+        return Metrics(row["time"], row["r2"],row["rmse"], row["k"], selected_features, selected_weights)
 
     def evaluate_for_all_features(self, dataset):
         for fold, (train_x, test_x, train_y, test_y) in enumerate(dataset.get_k_folds()):
-            oa, aa, k = train_test_evaluator.evaluate_split(train_x, test_x, train_y, test_y)
-            self.reporter.write_details_all_features(fold, dataset.get_name(), oa, aa, k)
+            r2, rmse, k = train_test_evaluator.evaluate_split(train_x, test_x, train_y, test_y, dataset.scaler_y)
+            self.reporter.write_details_all_features(fold, dataset.get_name(), r2, rmse, k)
 
 

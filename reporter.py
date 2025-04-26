@@ -23,11 +23,11 @@ class Reporter:
 
         if not os.path.exists(self.summary_file):
             with open(self.summary_file, 'w') as file:
-                file.write("dataset,target_size,algorithm,time,oa,aa,k,selected_features,selected_weights\n")
+                file.write("dataset,target_size,algorithm,time,r2,rmse,rpd,selected_features,selected_weights\n")
 
         if not os.path.exists(self.details_file):
             with open(self.details_file, 'w') as file:
-                file.write("dataset,target_size,algorithm,oa,aa,k,fold\n")
+                file.write("dataset,target_size,algorithm,r2,rmse,rpd,fold\n")
 
         if self.skip_all_bands:
             return
@@ -39,11 +39,11 @@ class Reporter:
 
         if not os.path.exists(self.all_features_summary_file):
             with open(self.all_features_summary_file, 'w') as file:
-                file.write("dataset,oa,aa,k\n")
+                file.write("dataset,r2,rmse,rpd\n")
 
         if not os.path.exists(self.all_features_details_file):
             with open(self.all_features_details_file, 'w') as file:
-                file.write("fold,dataset,oa,aa,k\n")
+                file.write("fold,dataset,r2,rmse,rpd\n")
 
     def get_summary(self):
         return self.summary_file
@@ -51,14 +51,11 @@ class Reporter:
     def get_details(self):
         return self.details_file
 
-    def write_oak(self, algorithm, dataset, target_size, oa, aa, k):
-        pass
-
-    def write_summary(self, algorithm, oas, aas, ks, metric:Metrics):
+    def write_summary(self, algorithm, r2s, rmses, rpds, metric:Metrics):
         time = Reporter.sanitize_metric(metric.time)
-        oa = Reporter.sanitize_metric(metric.oa)
-        aa = Reporter.sanitize_metric(metric.aa)
-        k = Reporter.sanitize_metric(metric.k)
+        r2 = Reporter.sanitize_metric(metric.r2)
+        rmse = Reporter.sanitize_metric(metric.rmse)
+        rpd = Reporter.sanitize_metric(metric.rpd)
         selected_features = np.array(metric.selected_features)
         selected_weights = np.array(metric.selected_weights)
         indices = np.argsort(selected_features)
@@ -66,21 +63,21 @@ class Reporter:
         selected_weights = selected_weights[indices]
         with open(self.summary_file, 'a') as file:
             file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},"
-                       f"{time},{oa},{aa},{k},"
+                       f"{time},{r2},{rmse},{rpd},"
                        f"{'|'.join([str(i) for i in selected_features])},"
                        f"{'|'.join([str(i) for i in selected_weights])}\n")
 
         with open(self.details_file, 'a') as file:
-            for i in range(len(oas)):
+            for i in range(len(r2s)):
                 file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},"
-                       f"{round(oas[i],2)},{round(aas[i],2)},{round(ks[i],2)},{i}\n")
+                       f"{round(r2s[i],2)},{round(rmses[i],2)},{round(rpds[i],2)},{i}\n")
 
-    def write_details_all_features(self, fold, name, oa, aa, k):
-        oa = Reporter.sanitize_metric(oa)
-        aa = Reporter.sanitize_metric(aa)
+    def write_details_all_features(self, fold, name, r2, rmse, k):
+        r2 = Reporter.sanitize_metric(r2)
+        rmse = Reporter.sanitize_metric(rmse)
         k = Reporter.sanitize_metric(k)
         with open(self.all_features_details_file, 'a') as file:
-            file.write(f"{fold},{name},{oa},{aa},{k}\n")
+            file.write(f"{fold},{name},{r2},{rmse},{k}\n")
         self.update_summary_for_all_features(name)
 
     def update_summary_for_all_features(self, dataset):
@@ -89,17 +86,17 @@ class Reporter:
         if len(df) == 0:
             return
 
-        oa = round(max(df["oa"].mean(),0),2)
-        aa = round(max(df["aa"].mean(),0),2)
+        r2 = round(max(df["r2"].mean(),0),2)
+        rmse = round(max(df["rmse"].mean(),0),2)
         k = round(max(df["k"].mean(),0),2)
 
         df2 = pd.read_csv(self.all_features_summary_file)
         mask = (df2['dataset'] == dataset)
         if len(df2[mask]) == 0:
-            df2.loc[len(df2)] = {"dataset":dataset, "oa":oa, "aa":aa, "k": k}
+            df2.loc[len(df2)] = {"dataset":dataset, "r2":r2, "rmse":rmse, "k": k}
         else:
-            df2.loc[mask, 'oa'] = oa
-            df2.loc[mask, 'aa'] = aa
+            df2.loc[mask, 'r2'] = r2
+            df2.loc[mask, 'rmse'] = rmse
             df2.loc[mask, 'k'] = k
         df2.to_csv(self.all_features_summary_file, index=False)
 
@@ -113,7 +110,7 @@ class Reporter:
         if len(rows) == 0:
             return None
         row = rows.iloc[0]
-        return Metrics(row["time"], row["oa"], row["aa"], row["k"], row["selected_features"], row["selected_weights"])
+        return Metrics(row["time"], row["r2"], row["rmse"], row["k"], row["selected_features"], row["selected_weights"])
 
     def save_results(self):
         os.makedirs(self.save_dir, exist_ok=True)
@@ -151,7 +148,7 @@ class Reporter:
         self.current_weight_all_report_file = os.path.join("results", f"{tag}_{algorithm}_{dataset}_{target_size}_weights_all.csv")
 
     def report_epoch(self, epoch, mse_loss, l1_loss, lambda_value, loss,
-                     oa,aa,k,
+                     r2,rmse,rpd,
                      min_cw, max_cw, avg_cw,
                      min_s, max_s, avg_s,
                      l0_cw, l0_s,
@@ -164,7 +161,7 @@ class Reporter:
                 file.write(f"epoch,"
                            f"l0_cw,l0_s,"
                            f"mse_loss,l1_loss,lambda_value,loss,"
-                           f"oa,aa,k,"
+                           f"r2,rmse,rpd,"
                            f"min_cw,max_cw,avg_cw,"
                            f"min_s,max_s,avg_s,"
                            f"selected_bands,selected_weights,{weight_labels}\n")
@@ -181,7 +178,7 @@ class Reporter:
                        f"{Reporter.sanitize_metric(mse_loss)},"
                        f"{Reporter.sanitize_small(l1_loss)},{Reporter.sanitize_small(lambda_value)},"
                        f"{Reporter.sanitize_metric(loss)},"
-                       f"{Reporter.sanitize_metric(oa)},{Reporter.sanitize_metric(aa)},{Reporter.sanitize_metric(k)},"
+                       f"{Reporter.sanitize_metric(r2)},{Reporter.sanitize_metric(rmse)},{Reporter.sanitize_metric(rpd)},"
                        f"{Reporter.sanitize_weight(min_cw)},{Reporter.sanitize_weight(max_cw)},{Reporter.sanitize_weight(avg_cw)},"
                        f"{Reporter.sanitize_weight(min_s)},{Reporter.sanitize_weight(max_s)},{Reporter.sanitize_weight(avg_s)},"
                        f"{selected_bands_str},{selected_weights_str},{weights}\n")

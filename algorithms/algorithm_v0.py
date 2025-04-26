@@ -59,8 +59,8 @@ class ZhangNet(nn.Module):
 
 
 class Algorithm_v0(Algorithm):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
-        super().__init__(target_size, dataset, tag, reporter, verbose, test)
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose):
+        super().__init__(target_size, dataset, tag, reporter, verbose)
         self.criterion = torch.nn.MSELoss()
         self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1]).to(self.device)
         self.total_epoch = 500
@@ -133,7 +133,7 @@ class Algorithm_v0(Algorithm):
         oa, aa, k = 0,0,0
 
         if self.verbose:
-            oa, aa, k = train_test_evaluator.evaluate_split(*self.dataset.get_a_fold(), self)
+            oa, aa, k = train_test_evaluator.evaluate_dataset(self.dataset, self)
 
         self.reporter.report_epoch(epoch, mse_loss, l1_loss, lambda1,loss,
                                oa, aa, k,

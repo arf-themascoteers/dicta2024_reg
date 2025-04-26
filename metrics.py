@@ -1,9 +1,9 @@
 class Metrics:
-    def __init__(self,time, oa, aa, k, selected_features, selected_weights):
+    def __init__(self,time, r2, rmse, rpd, selected_features, selected_weights):
         self.time = time
-        self.oa = oa
-        self.aa = aa
-        self.k = k
+        self.r2 = r2
+        self.rmse = rmse
+        self.rpd = rpd
         self.selected_features = selected_features
         self.selected_weights = selected_weights
 

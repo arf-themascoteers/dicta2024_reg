@@ -81,11 +81,11 @@ class Algorithm(ABC):
         return 0
 
     @staticmethod
-    def create(name, target_size, dataset, tag, reporter, verbose, test):
+    def create(name, target_size, dataset, tag, reporter, verbose):
         class_name = f"Algorithm_{name}"
         module = importlib.import_module(f"algorithms.algorithm_{name}")
         clazz = getattr(module, class_name)
-        return clazz(target_size, dataset, tag, reporter, verbose, test)
+        return clazz(target_size, dataset, tag, reporter, verbose)
 
     def set_weights(self, mean_weight):
         self.weights = mean_weight
