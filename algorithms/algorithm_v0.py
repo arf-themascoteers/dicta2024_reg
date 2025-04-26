@@ -63,6 +63,7 @@ class Algorithm_v0(Algorithm):
         self.criterion = torch.nn.MSELoss()
         self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1]).to(self.device)
         self.total_epoch = 500
+
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)
 
@@ -74,10 +75,8 @@ class Algorithm_v0(Algorithm):
         loss = 0
         l1_loss = 0
         mse_loss = 0
-
         for epoch in range(self.total_epoch):
             epoch = epoch
-            grad_norms = []
             for batch_idx, (X, y) in enumerate(dataloader):
                 optimizer.zero_grad()
                 channel_weights, sparse_weights, y_hat = self.zhangnet(X)
@@ -93,16 +92,7 @@ class Algorithm_v0(Algorithm):
                 if batch_idx == 0 and epoch%10 == 0:
                     attn_handler.report_stats(self, channel_weights, sparse_weights, epoch, mse_loss, l1_loss.item(), lambda_value,loss)
                 loss.backward()
-                grad_norm = torch.abs(self.zhangnet.weighter[2].weight.grad)
-                grad_norms.append(grad_norm)
                 optimizer.step()
-
-            grad_norms = torch.cat(grad_norms, dim=0)
-            mean_grad = torch.mean(grad_norms)
-            with open('v0_grad_norm.csv', mode='a', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow([mean_grad.item()])
-
 
         print(self.get_name(),"selected bands and weights:")
         print("".join([str(i).ljust(10) for i in self.selected_indices]))

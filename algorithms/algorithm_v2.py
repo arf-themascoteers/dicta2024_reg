@@ -61,7 +61,6 @@ class Algorithm_v2(Algorithm):
         loss = 0
         l1_loss = 0
         mse_loss = 0
-
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
             channel_weights, sparse_weights, y_hat = self.zhangnet(self.X_train)
