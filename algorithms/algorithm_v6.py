@@ -52,6 +52,7 @@ class Algorithm_v6(Algorithm):
         self.criterion = torch.nn.MSELoss()
         self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1]).to(self.device)
         self.total_epoch = 500
+
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)
 
@@ -61,7 +62,6 @@ class Algorithm_v6(Algorithm):
         loss = 0
         l1_loss = 0
         mse_loss = 0
-
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
             channel_weights, sparse_weights, y_hat = self.zhangnet(self.X_train)

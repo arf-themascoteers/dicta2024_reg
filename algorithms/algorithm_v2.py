@@ -52,6 +52,7 @@ class Algorithm_v2(Algorithm):
         self.criterion = torch.nn.MSELoss()
         self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1]).to(self.device)
         self.total_epoch = 500
+
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)
 
