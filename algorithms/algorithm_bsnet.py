@@ -2,7 +2,7 @@ from algorithm import Algorithm
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import torch
-import attn_report
+import attn_handler
 
 
 class BSNetFC(nn.Module):
@@ -76,7 +76,7 @@ class Algorithm_bsnet(Algorithm):
                 optimizer.zero_grad()
                 channel_weights, y_hat = self.bsnet(X)
                 deciding_weights = channel_weights
-                mean_weight, all_bands, selected_bands = self.get_indices(deciding_weights)
+                mean_weight, all_bands, selected_bands = attn_handler.get_indices(deciding_weights)
                 self.set_all_indices(all_bands)
                 self.set_selected_indices(selected_bands)
                 self.set_weights(mean_weight)
@@ -85,7 +85,7 @@ class Algorithm_bsnet(Algorithm):
                 l1_loss = torch.norm(channel_weights, p=1)/torch.numel(channel_weights)
                 loss = mse_loss + l1_loss * 0.01
                 if batch_idx == 0 and self.epoch%10 == 0:
-                    attn_report.report_stats(channel_weights, channel_weights, epoch, mse_loss, l1_loss.item(), 0.01,loss)
+                    attn_handler.report_stats(channel_weights, channel_weights, epoch, mse_loss, l1_loss.item(), 0.01,loss)
                 loss.backward()
                 optimizer.step()
             print(f"Epoch={epoch} MSE={round(mse_loss.item(), 5)}, L1={round(l1_loss.item(), 5)}, LOSS={round(loss.item(), 5)}")
@@ -93,15 +93,3 @@ class Algorithm_bsnet(Algorithm):
         print(self.get_name(),"selected bands and weights:")
         print("".join([str(i).ljust(10) for i in self.selected_indices]))
         return self.bsnet, self.selected_indices
-
-    def get_indices(self, deciding_weights):
-        mean_weights = deciding_weights
-        if len(mean_weights.shape) > 1:
-            mean_weights = torch.mean(mean_weights, dim=0)
-
-        corrected_weights = mean_weights
-        if torch.any(corrected_weights < 0):
-            corrected_weights = torch.abs(corrected_weights)
-
-        band_indx = (torch.argsort(corrected_weights, descending=True)).tolist()
-        return mean_weights, band_indx, band_indx[: self.target_size]
