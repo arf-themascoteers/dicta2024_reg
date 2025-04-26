@@ -72,12 +72,12 @@ class Reporter:
                 file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},"
                        f"{round(r2s[i],2)},{round(rmses[i],2)},{round(rpds[i],2)},{i}\n")
 
-    def write_details_all_features(self, fold, name, r2, rmse, k):
+    def write_details_all_features(self, fold, name, r2, rmse, rpd):
         r2 = Reporter.sanitize_metric(r2)
         rmse = Reporter.sanitize_metric(rmse)
-        k = Reporter.sanitize_metric(k)
+        rpd = Reporter.sanitize_metric(rpd)
         with open(self.all_features_details_file, 'a') as file:
-            file.write(f"{fold},{name},{r2},{rmse},{k}\n")
+            file.write(f"{fold},{name},{r2},{rmse},{rpd}\n")
         self.update_summary_for_all_features(name)
 
     def update_summary_for_all_features(self, dataset):
@@ -93,7 +93,7 @@ class Reporter:
         df2 = pd.read_csv(self.all_features_summary_file)
         mask = (df2['dataset'] == dataset)
         if len(df2[mask]) == 0:
-            df2.loc[len(df2)] = {"dataset":dataset, "r2":r2, "rmse":rmse, "k": rpd}
+            df2.loc[len(df2)] = {"dataset":dataset, "r2":r2, "rmse":rmse, "rpd": rpd}
         else:
             df2.loc[mask, 'r2'] = r2
             df2.loc[mask, 'rmse'] = rmse
@@ -110,7 +110,7 @@ class Reporter:
         if len(rows) == 0:
             return None
         row = rows.iloc[0]
-        return Metrics(row["time"], row["r2"], row["rmse"], row["k"], row["selected_features"], row["selected_weights"])
+        return Metrics(row["time"], row["r2"], row["rmse"], row["rpd"], row["selected_features"], row["selected_weights"])
 
     def save_results(self):
         os.makedirs(self.save_dir, exist_ok=True)
