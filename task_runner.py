@@ -87,7 +87,7 @@ class TaskRunner:
         row = rows.iloc[0]
         selected_features = row["selected_features"][0:algorithm.target_size]
         selected_weights = row["selected_weights"][0:algorithm.target_size]
-        return Metrics(row["time"], row["r2"],row["rmse"], row["k"], selected_features, selected_weights)
+        return Metrics(row["time"], row["r2"],row["rmse"], row["rpd"], selected_features, selected_weights)
 
     def evaluate_for_all_features(self, dataset):
         for fold, (train_x, test_x, train_y, test_y) in enumerate(dataset.get_k_folds()):
