@@ -14,7 +14,6 @@ class Algorithm(ABC):
         self.tag = tag
         self.reporter = reporter
         self.verbose = verbose
-        self.test = test
         self.selected_indices = None
         self.weights = None
         self.model = None
