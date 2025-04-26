@@ -79,13 +79,18 @@ class Algorithm_v9(Algorithm):
     def get_selected_indices(self):
         optimizer = torch.optim.Adam(self.zhangnet.parameters(), lr=0.001, betas=(0.9,0.999))
         channel_weights = None
+        sparse_weights = None
         loss = 0
         l1_loss = 0
         mse_loss = 0
 
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
-            channel_weights, sparse_weights, y_hat = self.zhangnet(self.X_train)
+            if sparse_weights is None:
+                l0_norm = self.X_train.shape[1]
+            else:
+                l0_norm = torch.norm(sparse_weights, p=0).item()
+            channel_weights, sparse_weights, y_hat = self.zhangnet(self.X_train, epoch, l0_norm)
             deciding_weights = channel_weights
             mean_weight, all_bands, selected_bands = self.get_indices(deciding_weights)
             self.set_all_indices(all_bands)
