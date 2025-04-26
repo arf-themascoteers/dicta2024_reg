@@ -13,8 +13,8 @@ def evaluate_train_test_pair(train_x, test_x, train_y, test_y, scaler_y):
     return calculate_metrics(test_y, y_pred, scaler_y)
 
 
-def evaluate_dataset(dataset):
-    return evaluate_train_test_pair(*dataset.get_a_fold(),dataset.scaler_y)
+def evaluate_dataset(dataset, transform):
+    return evaluate_split(*dataset.get_a_fold(),dataset.scaler_y, transform)
 
 
 def evaluate_split(train_x, test_x, train_y, test_y, scaler_y, transform=None):
@@ -39,9 +39,6 @@ def calculate_3_metrics(y_test, y_pred):
 
 
 def calculate_metrics(y_test, y_pred, scaler_y):
-    y_test = convert_to_numpy(y_test.detach().cpu().numpy())
-    y_pred = convert_to_numpy(y_pred.detach().cpu().numpy())
-
     r2, rmse, rpd = calculate_3_metrics(y_test, y_pred)
     y_test_original = scaler_y.inverse_transform(y_test.reshape(-1, 1)).ravel()
     y_pred_original = scaler_y.inverse_transform(y_pred.reshape(-1, 1)).ravel()

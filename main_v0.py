@@ -4,7 +4,7 @@ if __name__ == '__main__':
     tag = "v0"
     tasks = {
         "algorithms" : ["v0"],
-        "datasets": ["indian_pines"],
+        "datasets": ["lucas_min"],
         "target_sizes" : [30]
     }
     ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=True)

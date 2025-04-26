@@ -29,19 +29,19 @@ class ZhangNet(nn.Module):
             nn.Linear(512, self.bands)
         )
         self.classnet = nn.Sequential(
-            nn.Conv1d(1,16,kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2, stride=2, padding=0),
-            nn.Conv1d(16, 8, kernel_size=3, stride=1, padding=1),
+            nn.Conv1d(1,8,kernel_size=8, stride=4),
             nn.BatchNorm1d(8),
             nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2, stride=2, padding=0),
-            nn.Conv1d(8, 4, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm1d(4),
-            nn.MaxPool1d(kernel_size=2, stride=2, padding=0),
+            nn.MaxPool1d(kernel_size=4, stride=2),
+            nn.Conv1d(8, 16, kernel_size=16, stride=8),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=4, stride=2),
+            nn.Conv1d(16, 32, kernel_size=8, stride=4),
+            nn.BatchNorm1d(32),
+            nn.MaxPool1d(kernel_size=4, stride=2),
             nn.Flatten(start_dim=1),
-            nn.Linear(100,self.number_of_classes)
+            nn.Linear(64,1)
         )
         self.sparse = Sparse()
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
@@ -66,7 +66,7 @@ class Algorithm_v0(Algorithm):
         self.total_epoch = 500
         self.epoch = -1
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
-        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.int32).to(self.device)
+        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)
 
     def get_selected_indices(self):
         optimizer = torch.optim.Adam(self.zhangnet.parameters(), lr=0.001, betas=(0.9,0.999))
