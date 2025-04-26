@@ -1,0 +1,10 @@
+v0
+	fc
+v1
+	aggregated and full batch (adjust l1, k)
+v2
+	remove sigmoid - no sparsity (adjust l1, k=0)
+v6
+	dynamic sparsity, fixed l1 based on l0-norm
+v3
+	
