@@ -8,7 +8,7 @@ import attn_handler
 class Sparse(nn.Module):
     def __init__(self):
         super().__init__()
-        self.k = 0
+        self.k = 0.1
 
     def forward(self, X):
         X = torch.where(X < self.k, 0, X)
@@ -87,7 +87,7 @@ class Algorithm_v6(Algorithm):
         return torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
 
     def get_lambda(self, epoch):
-        return 0.0001 * math.exp(-epoch/self.total_epoch)
+        return 0.01 * math.exp(-epoch/self.total_epoch)
 
 
 
