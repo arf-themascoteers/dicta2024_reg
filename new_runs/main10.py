@@ -10,7 +10,7 @@ if __name__ == '__main__':
         "datasets": [
             "lucas"
         ],
-        "target_sizes" : list(range(30,4,-1))
+        "target_sizes" : [512, 256, 128, 64, 32, 16, 8]
     }
     ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=True)
     summary, details = ev.evaluate()

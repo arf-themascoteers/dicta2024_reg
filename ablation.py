@@ -23,6 +23,7 @@ COLORS = {
     "v2": "#FF00FF",
     "v6": "#9467bd",
     "v9": "#d62728",
+    "v10": "#d62728",
 
 }
 
@@ -170,8 +171,9 @@ def get_summaries_rec(d):
 
 if __name__ == "__main__":
     plot_ablation(
-        get_summaries_rec("summary")
+        get_summaries_rec("lucas_results")
         ,
         #include=["v0","v1","v2","v6","all"]
         include=["v0","v1","v2","v6","v9","all"]
+        #include=["v9","v10","all"]
     )
