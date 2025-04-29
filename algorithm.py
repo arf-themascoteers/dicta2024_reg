@@ -52,7 +52,7 @@ class Algorithm(ABC):
             ks.append(k)
         oa = sum(oas) / len(oas)
         aa = sum(aas) / len(aas)
-        k = sum(aas) / len(ks)
+        k = sum(ks) / len(ks)
         return oas, aas, ks, Metrics(elapsed_time, oa, aa, k, self.selected_indices, self.get_weights())
 
     @abstractmethod
