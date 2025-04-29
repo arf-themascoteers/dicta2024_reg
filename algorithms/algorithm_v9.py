@@ -5,9 +5,8 @@ import attn_handler
 
 
 class Sparse(nn.Module):
-    def __init__(self, dataset):
+    def __init__(self):
         super().__init__()
-        self.dataset = dataset
         self.last_k = 0
 
     def forward(self, X, epoch,l0_norm):
@@ -35,11 +34,10 @@ class Sparse(nn.Module):
 
 
 class ZhangNet(nn.Module):
-    def __init__(self, bands, dataset):
+    def __init__(self, bands):
         super().__init__()
 
         self.bands = bands
-        self.dataset = dataset
         self.weighter = nn.Sequential(
             nn.Linear(self.bands, 512),
             nn.ReLU(),
@@ -51,7 +49,7 @@ class ZhangNet(nn.Module):
             nn.BatchNorm1d(32),
             nn.Linear(32, 1),
         )
-        self.sparse = Sparse(self.dataset)
+        self.sparse = Sparse()
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print("Number of learnable parameters:", num_params)
 
@@ -70,8 +68,9 @@ class Algorithm_v9(Algorithm):
     def __init__(self, target_size:int, dataset, tag, reporter, verbose):
         super().__init__(target_size, dataset, tag, reporter, verbose)
         self.criterion = torch.nn.MSELoss()
-        self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1], dataset).to(self.device)
+        self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1]).to(self.device)
         self.total_epoch = 500
+
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)
 

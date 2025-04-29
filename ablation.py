@@ -172,5 +172,6 @@ if __name__ == "__main__":
     plot_ablation(
         get_summaries_rec("summary")
         ,
-        include=["v0","v1","v2","v6","all"]
+        #include=["v0","v1","v2","v6","all"]
+        include=["v0","v1","v2","v6","v9","all"]
     )
