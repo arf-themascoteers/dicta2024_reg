@@ -15,7 +15,7 @@ class Algorithm(ABC):
         self.reporter = reporter
         self.verbose = verbose
         self.selected_indices = None
-        self.weights = None
+        self.weights = np.zeros(self.dataset.get_train_x().shape[1])
         self.model = None
         self.all_indices = None
         self.reporter.create_epoch_report(tag, self.get_name(), self.dataset.get_name(), self.target_size)
