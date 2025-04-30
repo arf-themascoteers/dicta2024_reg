@@ -104,7 +104,7 @@ def plot_separately(source, exclude=None, include=None, out_dir="plots"):
                     rmse = alg_df.iloc[0]["rmse"]
                     k = alg_df.iloc[0]["rpd"]
                     alg_df = pd.DataFrame(
-                        {'target_size': range(5, 31), 'r2': [r2] * 26, 'rmse': [rmse] * 26, 'rpd': [k] * 26})
+                        {'target_size': [512, 256, 128, 64, 32, 16, 8], 'r2': [r2] * 7, 'rmse': [rmse] * 7, 'rpd': [k] * 7})
                     linestyle = "--"
                     color = "#000000"
                     marker = None
@@ -118,10 +118,11 @@ def plot_separately(source, exclude=None, include=None, out_dir="plots"):
 
             axes[metric_index].set_xscale("log", base=2)
             axes[metric_index].set_xticks([8, 16, 32, 64, 128, 256, 512])
+            axes[metric_index].get_xaxis().set_major_formatter(plt.ScalarFormatter())
 
             axes[metric_index].set_xlabel('Target size')
             axes[metric_index].set_ylabel(labels[metric_index])
-            axes[metric_index].set_ylim(min_lim, max_lim)
+            #axes[metric_index].set_ylim(min_lim, max_lim)
             axes[metric_index].tick_params(axis='both', which='major')
             axes[metric_index].grid(True, linestyle='-', alpha=0.6)
 
@@ -136,4 +137,5 @@ if __name__ == "__main__":
     plot_separately(
         get_summaries_rec("lucas_results"),
         include=["pcal", "mcuve", "spa", "bsnet", "v0", "v9", "all"]
+        #include=["v9", "all"]
     )
