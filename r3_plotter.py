@@ -8,7 +8,7 @@ plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 18
 
 ALGS = {
-    "v0": "BS-Net-Classifier",
+    "v0": "BS-Net-Regressor",
     "v9": "Proposed SABS",
     "all": "All Bands",
     "mcuve": "MCUVE",

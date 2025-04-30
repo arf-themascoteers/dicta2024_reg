@@ -3,13 +3,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.size'] = 22
+
 ALGS = {
-    "v0": "BS-Net-Classifier [12]",
+    "v0": "BS-Net-Regressor",
     "all": "All Bands",
-    "v1": "V1: BS-Net-Classifier [12] + FCNN",
+    "v1": "V1: BS-Net-Regressor + FCNN",
     "v2": "V2: V1 + improved aggregation",
-    "v6": "V3: V2 + absolute value activation (no sparse constraint)",
-    "v9": "V4: V3 + dynamic sparse constraint (proposed algorithm)",
+    "v6": "V3: V2 + absolute value activation",
+    "v9": "Proposed SABS: V3 + dynamic regulation",
 }
 
 COLORS = {
@@ -76,7 +80,7 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
     min_lim = min(df["r2"].min(), df["rmse"].min(), df["rpd"].min()) - 0.02
     max_lim = max(df["r2"].max(), df["rmse"].max(), df["rpd"].max()) + 0.02
     print(min_lim, max_lim)
-    dest = os.path.join("saved_figs", f"lucas.png")
+    dest = os.path.join("saved_figs", f"ablation_lucas.png")
     fig, axes = plt.subplots(ncols=3, figsize=(18, 6))
     for metric_index, metric in enumerate(["r2", "rmse", "rpd"]):
         algorithm_counter = 0
@@ -113,24 +117,24 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
                                     )
             #axes[metric_index].legend()
 
-        axes[metric_index].set_xlabel('Target size', fontsize=18)
-        axes[metric_index].set_ylabel(labels[metric_index], fontsize=18)
+        axes[metric_index].set_xlabel('Target size')
+        axes[metric_index].set_ylabel(labels[metric_index])
         #axes[metric_index].set_ylim(min_lim, max_lim)
-        axes[metric_index].tick_params(axis='both', which='major', labelsize=14)
+        axes[metric_index].tick_params(axis='both', which='major')
         axes[metric_index].text(0.5, -0.3, titles[metric_index],
                                          transform=axes[metric_index].transAxes,
-                                         fontsize=18, ha='center')
+                                         ha='center')
         axes[metric_index].set_xscale("log", base=2)
         axes[metric_index].set_xticks([8, 16, 32, 64, 128, 256, 512])
         axes[metric_index].get_xaxis().set_major_formatter(plt.ScalarFormatter())
 
 
         if metric_index == 0:
-            legend = axes[metric_index].legend(loc='upper left', fontsize=18, ncols=2,
-                                               bbox_to_anchor=(0, 1.5),
+            legend = axes[metric_index].legend(loc='upper left', ncols=2,
+                                               bbox_to_anchor=(0, 1.6),
                                                columnspacing=1.0, frameon=True
                                                )
-        legend.get_title().set_fontsize('18')
+        #legend.get_title().set_fontsize('18')
         legend.get_title().set_fontweight('bold')
 
 
