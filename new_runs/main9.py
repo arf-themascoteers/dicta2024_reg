@@ -4,13 +4,13 @@ import os
 os.chdir("..")
 
 if __name__ == '__main__':
-    tag = "pcal_bsnet"
+    tag = "spa2"
     tasks = {
-        "algorithms" : ["pcal", "bsnet"],
+        "algorithms" : ["spa2"],
         "datasets": [
             "lucas"
         ],
-        "target_sizes": [512, 256, 128, 64, 32, 16, 8]
+        "target_sizes": [8, 16, 32, 64, 128, 256, 512]
     }
     ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=False)
     summary, details = ev.evaluate()

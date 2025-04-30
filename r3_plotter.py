@@ -13,6 +13,7 @@ ALGS = {
     "all": "All Bands",
     "mcuve": "MCUVE",
     "spa": "SPA",
+    "spa2": "SPA",
     "bsnet": "BS-Net-FC",
     "pcal": "PCAL",
 }
@@ -26,6 +27,7 @@ COLORS = {
     "all": "#2ca02c",
     "mcuve": "#ff7f0e",
     "spa": "#00CED1",
+    "spa2": "#00CED1",
     "bsnet": "#008000",
     "pcal": "#9467bd",
     "v9": "#d62728",
@@ -136,6 +138,6 @@ def plot_separately(source, exclude=None, include=None, out_dir="plots"):
 if __name__ == "__main__":
     plot_separately(
         get_summaries_rec("lucas_results"),
-        include=["pcal", "mcuve", "spa", "bsnet", "v0", "v9", "all"]
+        include=["pcal", "mcuve", "spa2", "bsnet", "v0", "v9", "all"]
         #include=["v9", "all"]
     )
