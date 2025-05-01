@@ -111,7 +111,7 @@ class Algorithm_v9(Algorithm):
         return torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
 
     def get_lambda(self, l0_norm):
-        l0_norm_threshold = 600
+        l0_norm_threshold = 1100
         if l0_norm <= l0_norm_threshold:
             return 0
         m = 0.1

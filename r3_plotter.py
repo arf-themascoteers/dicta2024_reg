@@ -69,7 +69,7 @@ def plot_separately(source, exclude=None, include=None, out_dir="plots"):
         df = df[df["dataset"] == dataset_key]
         if len(df) == 0:
             continue
-
+        df.to_csv("refined.csv", index=False)
         colors = list(COLORS.values())
         markers = ['s', 'P', 'D', '^', 'o', '*', '.', 's', 'P', 'D', '^', 'o', '*', '.']
         labels = ["$R^2$", "RMSE", "RPD"]
