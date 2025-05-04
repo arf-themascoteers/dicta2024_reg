@@ -208,7 +208,7 @@ class Reporter:
     def report_bsdr_epoch(self, epoch, mse_loss,r2,rmse,rpd,selected_bands):
         if not os.path.exists(self.current_epoch_report_file):
             with open(self.current_epoch_report_file, 'w') as file:
-                file.write(f"epoch,mse,r2,rmse,rpd,selected_bands")
+                file.write(f"epoch,mse,r2,rmse,rpd,selected_bands\n")
 
         with open(self.current_epoch_report_file, 'a') as file:
             selected_bands_str = '|'.join([str(i) for i in selected_bands])

@@ -86,11 +86,11 @@ class Algorithm_bsdr(Algorithm):
             loss = self.criterion(y_hat, self.y_train)
             loss.backward()
             optimizer.step()
-            self.set_selected_indices(self.ann.get_indices())
+            self.set_selected_indices(self.get_indices())
             if self.verbose:
                 self.report(epoch, loss.item())
-        print("|".join([f"{round(i.item() * 4200)}" for i in self.ann.indices]))
-        return self
+        print("|".join([str(i) for i in self.get_indices()]))
+        return self.ann, self.selected_indices
 
     def report(self, epoch, mse):
         if not self.verbose:
