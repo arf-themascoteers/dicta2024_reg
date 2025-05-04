@@ -203,3 +203,16 @@ class Reporter:
                 for i in range(0,500,10):
                     file.write(f"{i},{saved_weights[i,0].item()},{saved_weights[i,1].item()},{saved_weights[i,2].item()}\n")
 
+
+
+    def report_bsdr_epoch(self, epoch, mse_loss,r2,rmse,rpd,selected_bands):
+        if not os.path.exists(self.current_epoch_report_file):
+            with open(self.current_epoch_report_file, 'w') as file:
+                file.write(f"epoch,mse,r2,rmse,rpd,selected_bands")
+
+        with open(self.current_epoch_report_file, 'a') as file:
+            selected_bands_str = '|'.join([str(i) for i in selected_bands])
+            file.write(f"{epoch},"
+                       f"{Reporter.sanitize_metric(mse_loss)},"
+                       f"{Reporter.sanitize_metric(r2)},{Reporter.sanitize_metric(rmse)},{Reporter.sanitize_metric(rpd)},"
+                       f"{selected_bands_str}\n")
