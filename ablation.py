@@ -11,10 +11,17 @@ ALGS = {
     "v0": "BS-Net-Regressor",
     "all": "All Bands",
     "v1": "V1: BS-Net-Regressor + FCNN",
-    "v2": "V2: V1 + improved aggregation",
-    "v6": "V3: V2 + absolute value activation",
-    "v9": "Proposed SABS: V3 + dynamic regulation",
+    #"v2_dummy": "V2: V1 + improved aggregation",
+    "v3_dummy": "V3: V2 + absolute value activation",
+    "v2": "Proposed SABS: V3 + dynamic regulation",
+    "v9": "Proposed BSDR"
 }
+
+ALGS = {
+
+}
+
+confirmed = []
 
 COLORS = {
     "v0": "#1f77b4",
@@ -23,11 +30,13 @@ COLORS = {
     "mcuve": "#ff7f0e",
     "bsnet": "#008000",
     "pcal": "#9467bd",
-    "v1": "#7FFF00",
+    "v1": "#FF00FF",
     "v2": "#FF00FF",
-    "v6": "#9467bd",
-    "v9": "#d62728",
-    "v10": "#d62728",
+    "v3_dummy": "#9467bd",
+    "v4_dummy": "#90000d",
+    "v5_dummy": "#FFF00d",
+    "v2_dummy": "#00FF00",
+    "v9": "#FFA500",
 
 }
 
@@ -63,11 +72,22 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
     min_lim = 0.3
     max_lim = 1
 
-    order = ["all", "pcal", "mcuve", "bsnet", "v0", "v1", "v2", "v3", "v35", "v4"]
+    #order = ["all", "pcal", "mcuve", "bsnet", "v0", "v1", "v2", "v3", "v35", "v4"]
+    order = [
+        "all",
+        "pcal","mcuve", "bsnet",
+        "v0",
+        "v9_dummy",
+        "v4_dummy",
+        "v2",
+        "v2_dummy",
+        "v9"
+    ]
     df["sort_order"] = df["algorithm"].apply(lambda x: order.index(x) if x in order else len(order) + ord(x[0]))
     df = df.sort_values("sort_order").drop(columns=["sort_order"])
 
     algorithms = df["algorithm"].unique()
+    #print(algorithms)
 
     if include is None:
         include = algorithms
@@ -109,11 +129,15 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
             else:
                 algorithm_counter = algorithm_counter + 1
 
+            marker = "-"
+            if algorithm in confirmed:
+                marker = "--"
             axes[metric_index].plot(alg_df['target_size'], alg_df[metric],
                                     color=color,
                                     fillstyle='none', markersize=7,
-                                    linewidth=2, linestyle=linestyle,
-                                    label=algorithm_label
+                                    linewidth=2,
+                                    label=algorithm_label,
+                                    linestyle=linestyle
                                     )
             #axes[metric_index].legend()
 
@@ -130,7 +154,7 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
 
 
         if metric_index == 0:
-            legend = axes[metric_index].legend(loc='upper left', ncols=2,
+            legend = axes[metric_index].legend(loc='upper left', ncols=3,
                                                bbox_to_anchor=(0, 1.6),
                                                columnspacing=1.0, frameon=True
                                                )
@@ -175,9 +199,19 @@ def get_summaries_rec(d):
 
 if __name__ == "__main__":
     plot_ablation(
-        get_summaries_rec("lucas_results")
+        get_summaries_rec("lucas_results3")
         ,
-        #include=["v0","v1","v2","v6","all"]
-        include=["v0","v1","v2","v6","v9","all"]
-        #include=["v9","v10","all"]
+        # include=[
+        #     "v9_dummy",
+        #     "v10"
+        # ],
+        include=[
+            "all",
+            "v0",
+            "v9_dummy",
+            "v4_dummy",
+            "v1",
+            "v2_dummy",
+            "v9"
+        ]
     )

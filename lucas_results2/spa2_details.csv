@@ -1,0 +1,8 @@
+dataset,target_size,algorithm,r2,rmse,rpd,fold
+lucas,8,spa2,0.68,43.67,1.77,0
+lucas,16,spa2,0.66,45.09,1.71,0
+lucas,32,spa2,0.66,44.79,1.72,0
+lucas,64,spa2,0.68,43.61,1.77,0
+lucas,128,spa2,0.7,42.59,1.81,0
+lucas,256,spa2,0.7,42.41,1.82,0
+lucas,512,spa2,0.72,40.8,1.89,0

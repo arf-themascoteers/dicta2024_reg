@@ -133,11 +133,12 @@ def plot_separately(source, exclude=None, include=None, out_dir="plots"):
 
         fig.tight_layout()
         plt.savefig(os.path.join(out_dir, f"r3_{dataset_key}.png"), bbox_inches='tight')#, pad_inches=0.05)
+        plt.show()
         plt.close(fig)
 
 if __name__ == "__main__":
     plot_separately(
-        get_summaries_rec("lucas_results"),
-        include=["pcal", "mcuve", "spa2", "bsnet", "v0", "v9", "all"]
+        get_summaries_rec("lucas_results2"),
+        include=["pcal", "mcuve", "spa2", "bsnet", "v0", "v9", "bsdr", "all"]
         #include=["v9", "all"]
     )

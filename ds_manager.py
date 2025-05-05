@@ -35,7 +35,7 @@ class DSManager:
         return self.data[:, -1]
 
     def get_k_folds(self):
-        folds = 20
+        folds = 1
         for i in range(folds):
             seed = 40 + i
             yield self.get_a_fold(seed)

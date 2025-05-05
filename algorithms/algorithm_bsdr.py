@@ -39,10 +39,10 @@ class ANN(nn.Module):
                          requires_grad=True).to(self.device))
 
         self.fc = nn.Sequential(
-            nn.Linear(target_size, 40),
-            nn.BatchNorm1d(40),
+            nn.Linear(target_size, 500),
+            nn.BatchNorm1d(500),
             nn.LeakyReLU(),
-            nn.Linear(40, 1)
+            nn.Linear(500, 1)
         )
 
     @staticmethod
@@ -63,15 +63,15 @@ class Algorithm_bsdr(Algorithm):
     def __init__(self, target_size:int, dataset, tag, reporter, verbose):
         super().__init__(target_size, dataset, tag, reporter, verbose)
 
-        torch.manual_seed(1)
-        torch.cuda.manual_seed(1)
-        torch.backends.cudnn.deterministic = True
+        # torch.manual_seed(1)
+        # torch.cuda.manual_seed(1)
+        # torch.backends.cudnn.deterministic = True
 
         self.original_feature_size = self.dataset.get_train_x().shape[1]
 
         self.ann = ANN(self.target_size).to(self.device)
         self.criterion = torch.nn.MSELoss()
-        self.total_epoch = 500
+        self.total_epoch = 2000
 
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.float32).to(self.device)

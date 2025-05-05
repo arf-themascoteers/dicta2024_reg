@@ -4,9 +4,9 @@ import os
 os.chdir("..")
 
 if __name__ == '__main__':
-    tag = "dummy5"
+    tag = "dummy9"
     tasks = {
-        "algorithms" : ["v5_dummy"],
+        "algorithms" : ["v9_dummy"],
         "datasets": [
             "lucas"
         ],
