@@ -7,37 +7,45 @@ import os
 plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 22
 
+order = [
+    "all",
+    "pcal",
+    "mcuve",
+    "spa2",
+    "bsnet",
+    "v0",
+    "v9_dummy",#V1
+    "v4_dummy",#V2
+    "v1",#V3
+    "v2_dummy",#SABS
+    "v9"#BSDR
+]
 ALGS = {
-    "v0": "BS-Net-Regressor",
     "all": "All Bands",
-    "v1": "V1: BS-Net-Regressor + FCNN",
-    #"v2_dummy": "V2: V1 + improved aggregation",
-    "v3_dummy": "V3: V2 + absolute value activation",
-    "v2": "Proposed SABS: V3 + dynamic regulation",
-    "v9": "Proposed BSDR"
+    "pcal": "PCAL",
+    "mcuve": "MCUVE",
+    "spa2": "SPA",
+    "bsnet": "BS_Net-FC",
+    "v0": "BS-Net-Regressor",
+    "v9_dummy": "V1: BS-Net-Regressor + FCNN",
+    "v4_dummy": "V2: V1 + improved aggregation",
+    "v1": "V3: V2 + absolute value activation",
+    "v2_dummy": "Proposed SABS: V3 + dynamic regulation",
+    "v9": "Proposed BSDR",
 }
-
-ALGS = {
-
-}
-
-confirmed = []
 
 COLORS = {
-    "v0": "#1f77b4",
-    "v4": "#d62728",
-    "all": "#2ca02c",
-    "mcuve": "#ff7f0e",
-    "bsnet": "#008000",
-    "pcal": "#9467bd",
-    "v1": "#FF00FF",
-    "v2": "#FF00FF",
-    "v3_dummy": "#9467bd",
-    "v4_dummy": "#90000d",
-    "v5_dummy": "#FFF00d",
-    "v2_dummy": "#00FF00",
-    "v9": "#FFA500",
-
+    "all": "black",
+    "pcal": "#008080",
+    "mcuve": "orange",
+    "spa2": "green",
+    "bsnet": "#8B4513",
+    "v0": "cyan",
+    "v9_dummy": "#008080",
+    "v4_dummy": "orange",
+    "v1": "green",
+    "v2_dummy": "red",
+    "v9": "purple",
 }
 
 
@@ -50,36 +58,32 @@ def sanitize_df(df):
     return df
 
 
-def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
+def plot_ablation_oak(source, plot_type, exclude=None, include=None):
+    loc = "plots2"
+    os.makedirs(loc, exist_ok=True)
+    dest = os.path.join(loc, f"{plot_type}.png")
+
     if exclude is None:
         exclude = []
-    os.makedirs("saved_figs", exist_ok=True)
     if isinstance(source, str):
         df = sanitize_df(pd.read_csv(source))
     else:
         df = [sanitize_df(pd.read_csv(loc)) for loc in source]
         df = [d for d in df if len(d)!=0]
         df = pd.concat(df, axis=0, ignore_index=True)
-
-
-    df.to_csv(os.path.join("saved_figs", "source.split.csv"), index=False)
+    df.to_csv(os.path.join(loc,"source.split.csv"), index=False)
     colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22",
               "#17becf"]
     markers = ['s', 'P', 'D', '^', 'o', '*', '.','s', 'P', 'D', '^', 'o', '*', '.']
     labels = ["$R^2$", "RMSE", r"RPD"]
     titles = ["(a)", "(b)", "(c)"]
-
-    min_lim = 0.3
-    max_lim = 1
-
-    #order = ["all", "pcal", "mcuve", "bsnet", "v0", "v1", "v2", "v3", "v35", "v4"]
     order = [
         "all",
         "pcal","mcuve", "bsnet",
         "v0",
         "v9_dummy",
         "v4_dummy",
-        "v2",
+        "v1",
         "v2_dummy",
         "v9"
     ]
@@ -100,7 +104,6 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
     min_lim = min(df["r2"].min(), df["rmse"].min(), df["rpd"].min()) - 0.02
     max_lim = max(df["r2"].max(), df["rmse"].max(), df["rpd"].max()) + 0.02
     print(min_lim, max_lim)
-    dest = os.path.join("saved_figs", f"ablation_lucas.png")
     fig, axes = plt.subplots(ncols=3, figsize=(18, 6))
     for metric_index, metric in enumerate(["r2", "rmse", "rpd"]):
         algorithm_counter = 0
@@ -129,9 +132,6 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
             else:
                 algorithm_counter = algorithm_counter + 1
 
-            marker = "-"
-            if algorithm in confirmed:
-                marker = "--"
             axes[metric_index].plot(alg_df['target_size'], alg_df[metric],
                                     color=color,
                                     fillstyle='none', markersize=7,
@@ -154,7 +154,8 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
 
 
         if metric_index == 0:
-            legend = axes[metric_index].legend(loc='upper left', ncols=3,
+            legend = axes[metric_index].legend(loc='upper left',
+                                               ncols=2,
                                                bbox_to_anchor=(0, 1.6),
                                                columnspacing=1.0, frameon=True
                                                )
@@ -170,13 +171,10 @@ def plot_ablation_oak(source, exclude=None, include=None, out_file="ab.png"):
 
 
 
-def plot_ablation(source, include = None):
+def plot_ablation(source,plot_type,include = None):
     if include is None:
         include = []
-    plot_ablation_oak(source,
-         out_file = "ablation.png",
-         include=include
-    )
+    plot_ablation_oak(source,plot_type,include=include)
 
 
 def get_summaries(d):
@@ -196,15 +194,10 @@ def get_summaries_rec(d):
 
     return paths
 
-
-if __name__ == "__main__":
+def create_plot(plot_type="ablation"):
     plot_ablation(
-        get_summaries_rec("lucas_results3")
-        ,
-        # include=[
-        #     "v9_dummy",
-        #     "v10"
-        # ],
+        get_summaries_rec("lucas_results3"),
+        plot_type,
         include=[
             "all",
             "v0",
@@ -215,3 +208,7 @@ if __name__ == "__main__":
             "v9"
         ]
     )
+
+
+if __name__ == "__main__":
+    create_plot("ablation")
